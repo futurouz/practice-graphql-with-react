@@ -15,14 +15,14 @@ const CompanyType = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLString },
         name: { type: GraphQLString },
-        description: { type: GraphQLString }
-        // user: {
-        //     type: GraphQLList(UserType),
-        //     resolve(parentValue, args) {
-        //         return axios.get(`http://localhost:3000/companies/${parentValue.id}/users`)
-        //             .then(res => res.data)
-        //     }
-        // }
+        description: { type: GraphQLString },
+        user: {
+            type: new GraphQLList(UserType),
+            resolve(parentValue, args) {
+                return axios.get(`http://localhost:3000/companies/${parentValue.id}/users`)
+                    .then(res => res.data)
+            }
+        }
     })
 });
 
@@ -76,10 +76,10 @@ const mutation = new GraphQLObjectType({
             args: {
                 firstName: { type: new GraphQLNonNull(GraphQLString) },
                 age: { type: new GraphQLNonNull(GraphQLInt) },
-                // companyId: { type: GraphQLString }
+                companyId: { type: GraphQLString }
             },
             resolve(parentValue, { firstName, age }) {
-                return axios.post(`http://localhost:3000/users`, { firstName, age })
+                return axios.post(`http://localhost:3000/users`, { firstName, age, companyId })
                     .then(res => res.data)
             }
         },
@@ -98,7 +98,8 @@ const mutation = new GraphQLObjectType({
             args: {
                 id: { type: new GraphQLNonNull(GraphQLString) },
                 firstName: { type: GraphQLString },
-                age: { type: GraphQLInt }
+                age: { type: GraphQLInt },
+                companyId: { type: GraphQLString }
             },
             resolve(parentValue, args) {
                 return axios.patch(`http://localhost:3000/users/${args.id}`, args)
